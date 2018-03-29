@@ -57,7 +57,7 @@ namespace JWTIntegrator
 
         private void MenuItemCallback(object sender, EventArgs e)
         {
-            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
+            string message = string.Format(CultureInfo.CurrentCulture, "Process Completed Successfully", this.GetType().FullName);
             string title = "Integrator";
 
             var project = ProjectHelpers.GetActiveProject();
@@ -65,6 +65,10 @@ namespace JWTIntegrator
             var projectpath = project.GetFullPath();
 
             AddtoConfigJson(GetJsonFile(projectpath));
+
+            CreateSigningConfigurationsFile(projectpath);
+
+            CreateTokenConfigurationsFile(projectpath);
 
             // Show a message box to prove we were here
             VsShellUtilities.ShowMessageBox(
@@ -80,15 +84,21 @@ namespace JWTIntegrator
         {
             Logger.Log("Adding info to .csproj file");
 
-            var sb = new StringBuilder();
-            sb.Append(@"<Target Name=""PostBuild"" AfterTargets=""PostBuildEvent"">");
-            sb.Append(@"<Exec Command=""copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(ProjectDir)\Minifly\modules&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(ProjectDir)\Minifly\modules&quot;&#xD;&#xA;"" />");
-            sb.Append(@"</Target>");
-            sb.Append(@"</Project>");
+            // Removing the First Line of file
+            var lines = File.ReadAllLines(file);
+            File.WriteAllLines(file, lines.Skip(1).ToArray());
 
-            string text = File.ReadAllText(file);
-            text = text.Replace("</Project>", sb.ToString());
-            File.WriteAllText(file, text);
+            var currentContent = File.ReadAllText(file);
+
+            var sb = new StringBuilder();
+            sb.AppendLine(@"{");
+            sb.AppendLine(@"  ""TokenConfigurations"": {");
+            sb.AppendLine(@"    ""Audience"": ""ExemploAudience"",");
+            sb.AppendLine(@"    ""Issuer"": ""ExemploIssuer"",");
+            sb.AppendLine(@"    ""Seconds"": 120");
+            sb.AppendLine(@" },");
+
+            File.WriteAllText(file, sb.ToString() + currentContent);
         }
 
         private string GetJsonFile(string projectpath)
@@ -97,6 +107,46 @@ namespace JWTIntegrator
             Logger.Log($"Found .csproj file {files.First()}");
 
             return files.First();
+        }
+
+        private void CreateSigningConfigurationsFile(string projectpath)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(@"using System.Security.Cryptography;");
+            sb.AppendLine(@"using Microsoft.IdentityModel.Tokens;");
+            sb.AppendLine(@"");
+            sb.AppendLine(@"    public class SigningConfigurations");
+            sb.AppendLine(@"    {");
+            sb.AppendLine(@"        public SecurityKey Key { get; }");
+            sb.AppendLine(@"        public SigningCredentials SigningCredentials { get; }");
+            sb.AppendLine(@" ");
+            sb.AppendLine(@"        public SigningConfigurations()");
+            sb.AppendLine(@"        {");
+            sb.AppendLine(@"            using (var provider = new RSACryptoServiceProvider(2048))");
+            sb.AppendLine(@"            {");
+            sb.AppendLine(@"                Key = new RsaSecurityKey(provider.ExportParameters(true));");
+            sb.AppendLine(@"            }");
+            sb.AppendLine(@" ");
+            sb.AppendLine(@"            SigningCredentials = new SigningCredentials(");
+            sb.AppendLine(@"                Key, SecurityAlgorithms.RsaSha256Signature);");
+            sb.AppendLine(@"        }");
+            sb.AppendLine(@"    }");
+
+            File.WriteAllText(projectpath + "SigningConfigurations.cs", sb.ToString());
+        }
+
+        private void CreateTokenConfigurationsFile(string projectpath)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine(@"public class TokenConfigurations");
+            sb.AppendLine(@"{");
+            sb.AppendLine(@"    public string Audience { get; set; }");
+            sb.AppendLine(@"    public string Issuer { get; set; }");
+            sb.AppendLine(@"    public int Seconds { get; set; }");
+            sb.AppendLine(@"}");
+
+            File.WriteAllText(projectpath + "TokenConfigurations.cs", sb.ToString());
         }
     }
 }
