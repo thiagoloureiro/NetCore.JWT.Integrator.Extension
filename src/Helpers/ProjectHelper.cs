@@ -1,10 +1,10 @@
-﻿using System;
+﻿using EnvDTE;
+using EnvDTE80;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using EnvDTE;
-using EnvDTE80;
 
 namespace JWTIntegrator.Helpers
 {
