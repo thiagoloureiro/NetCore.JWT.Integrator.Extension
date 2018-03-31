@@ -7,8 +7,18 @@ namespace JWTIntegrator.Helpers
 {
     public static class FileHelper
     {
+        public static void CreateBackup(string projectpath)
+        {
+            Logger.Log("Backup Startup.cs and Appsetings.json files");
+
+            File.Copy(projectpath + "startup.cs", projectpath + "startup.cs.bak");
+            File.Copy(projectpath + "appsettings.json", projectpath + "appsettings.json.bak");
+        }
+
         public static void CreateSigningConfigurationsFile(string projectpath)
         {
+            Logger.Log("Creating SigningConfigurations.cs file");
+
             if (File.Exists(projectpath + "SigningConfigurations.cs"))
                 return;
 
@@ -38,8 +48,13 @@ namespace JWTIntegrator.Helpers
 
         public static void CreateTokenConfigurationsFile(string projectpath)
         {
+            Logger.Log("Creating TokenConfiguration.cs File");
+
             if (File.Exists(projectpath + "TokenConfigurations.cs"))
+            {
+                Logger.Log("File already exists, ignoring");
                 return;
+            }
 
             var sb = new StringBuilder();
 
@@ -55,7 +70,7 @@ namespace JWTIntegrator.Helpers
 
         public static void AddtoConfigJson(string file)
         {
-            Logger.Log("Adding info to .csproj file");
+            Logger.Log("Adding info to .json file");
 
             // Removing the First Line of file
             var lines = File.ReadAllLines(file);
@@ -63,6 +78,8 @@ namespace JWTIntegrator.Helpers
             if (lines.Any(line => line.Contains("TokenConfigurations")))
             {
                 // Do not change file because configuration maybe already exists
+                Logger.Log("Configuration already exists, ignoring");
+
                 return;
             }
 
@@ -84,13 +101,15 @@ namespace JWTIntegrator.Helpers
         public static string GetJsonFile(string projectpath)
         {
             var files = Directory.GetFiles(projectpath, "appsettings.json");
-            Logger.Log($"Found .csproj file {files.First()}");
+            Logger.Log($"Found .json file {files.First()}");
 
             return files.First();
         }
 
         public static void AddInfotoStartup(string projectpath)
         {
+            Logger.Log("Adding info to Startup.cs file");
+
             string fileName = projectpath + "Startup.cs";
 
             // Writing Usings in the beggining of File
@@ -101,7 +120,11 @@ namespace JWTIntegrator.Helpers
             var currentContent = File.ReadAllText(fileName);
 
             if (currentContent.Contains("TokenConfigurations"))
+            {
+                Logger.Log("Configuration already exists, ignoring");
+
                 return;
+            }
 
             File.WriteAllText(fileName, sb + currentContent);
 

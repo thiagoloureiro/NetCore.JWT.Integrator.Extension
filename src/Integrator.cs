@@ -39,19 +39,30 @@ namespace JWTIntegrator
         private void MenuItemCallback(object sender, EventArgs e)
         {
             string message = string.Format(CultureInfo.CurrentCulture, "Process Completed Successfully", GetType().FullName);
-            string title = "Integrator";
+            string title = "JWT Integrator Tool";
 
             var project = ProjectHelpers.GetActiveProject();
 
             var projectpath = project.GetFullPath();
 
-            FileHelper.AddtoConfigJson(FileHelper.GetJsonFile(projectpath));
+            try
+            {
+                FileHelper.CreateBackup(projectpath);
 
-            FileHelper.CreateSigningConfigurationsFile(projectpath);
+                FileHelper.AddtoConfigJson(FileHelper.GetJsonFile(projectpath));
 
-            FileHelper.CreateTokenConfigurationsFile(projectpath);
+                FileHelper.CreateSigningConfigurationsFile(projectpath);
 
-            FileHelper.AddInfotoStartup(projectpath);
+                FileHelper.CreateTokenConfigurationsFile(projectpath);
+
+                FileHelper.AddInfotoStartup(projectpath);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Error during the operation: " + ex);
+            }
+
+            Logger.Log("Integration completed with success");
 
             // Show a message box to prove we were here
             VsShellUtilities.ShowMessageBox(

@@ -10,7 +10,7 @@ namespace JWTIntegrator.Helpers
 {
     public static class ProjectHelpers
     {
-        private static DTE2 _dte = IntegratorPackage.Instance._dte;
+        private static DTE2 _dte = IntegratorPackage.Instance.Dte;
 
         public static IEnumerable<ProjectItem> GetSelectedItems()
         {
