@@ -59,6 +59,13 @@ namespace JWTIntegrator.Helpers
 
             // Removing the First Line of file
             var lines = File.ReadAllLines(file);
+
+            if (lines.Any(line => line.Contains("TokenConfigurations")))
+            {
+                // Do not change file because configuration maybe already exists
+                return;
+            }
+
             File.WriteAllLines(file, lines.Skip(1).ToArray());
 
             var currentContent = File.ReadAllText(file);
@@ -92,6 +99,10 @@ namespace JWTIntegrator.Helpers
             sb.AppendLine("using Microsoft.AspNetCore.Authentication.JwtBearer;");
 
             var currentContent = File.ReadAllText(fileName);
+
+            if (currentContent.Contains("TokenConfigurations"))
+                return;
+
             File.WriteAllText(fileName, sb + currentContent);
 
             // Removing the { after ConfigureServices to add the code
