@@ -11,8 +11,8 @@ namespace JWTIntegrator.Helpers
         {
             Logger.Log("Backup Startup.cs and Appsetings.json files");
 
-            File.Copy(projectpath + "startup.cs", projectpath + "startup.cs.bak");
-            File.Copy(projectpath + "appsettings.json", projectpath + "appsettings.json.bak");
+            File.Copy(projectpath + "startup.cs", projectpath + "startup.cs.bak", true);
+            File.Copy(projectpath + "appsettings.json", projectpath + "appsettings.json.bak", true);
         }
 
         public static void CreateSigningConfigurationsFile(string projectpath)
@@ -20,7 +20,10 @@ namespace JWTIntegrator.Helpers
             Logger.Log("Creating SigningConfigurations.cs file");
 
             if (File.Exists(projectpath + "SigningConfigurations.cs"))
+            {
+                Logger.Log("File already exists, ignoring");
                 return;
+            }
 
             var sb = new StringBuilder();
             sb.AppendLine(@"using System.Security.Cryptography;");

@@ -83,6 +83,10 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Key.snk" />
+    <Content Include="LICENSE">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -91,11 +95,15 @@
     <VSCTCompile Include="IntegratorPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
-    <Content Include="Resources\IntegratorPackage.ico" />
-    <Content Include="Resources\jwt.png">
+    <Content Include="Resources\preview.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\icon16.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\IntegratorPackage.ico" />
     <Content Include="stylesheet.css" />
   </ItemGroup>
   <ItemGroup>
