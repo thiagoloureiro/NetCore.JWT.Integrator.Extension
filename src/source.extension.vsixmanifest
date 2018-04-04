@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="JWTIntegrator.411ce7d8-c523-4a1d-ad84-e3d509991fd8" Version="1.0" Language="en-US" Publisher="Thiago Loureiro de Azevedo" />
+        <Identity Id="JWTIntegrator.411ce7d8-c523-4a1d-ad84-e3d509991fd8" Version="1.1" Language="en-US" Publisher="Thiago Loureiro de Azevedo" />
         <DisplayName>JWT Integrator</DisplayName>
         <Description xml:space="preserve">JWT Integrator for .NET Core Web API.
 Easily Create classes and configuration inside your .NET Core WEBAPI 2.0 Project</Description>

@@ -194,5 +194,88 @@ namespace JWTIntegrator.Helpers
 
             File.WriteAllLines(fileName, file);
         }
+
+        public static void CreateTokenController(string projectpath)
+        {
+            Logger.Log("Creating TokenController");
+
+            if (File.Exists(projectpath + "Controllers\\TokenController.cs"))
+            {
+                Logger.Log("File already exists, ignoring");
+                return;
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine(@"using System;");
+            sb.AppendLine(@"using Microsoft.AspNetCore.Mvc;");
+            sb.AppendLine(@"using Microsoft.AspNetCore.Authorization;");
+            sb.AppendLine(@"using System.IdentityModel.Tokens.Jwt;");
+            sb.AppendLine(@"using System.Security.Claims;");
+            sb.AppendLine(@"using System.Security.Principal;");
+            sb.AppendLine(@"using Microsoft.IdentityModel.Tokens;");
+            sb.AppendLine(@"");
+            sb.AppendLine(@"// This is a Token Example controller to generate the token to your API");
+            sb.AppendLine(@"// To access use for ex Postman and call: http://localhost:{port}/api/token/auth");
+            sb.AppendLine(@"");
+            sb.AppendLine(@"namespace WebApplication5.Controllers");
+            sb.AppendLine(@"{");
+            sb.AppendLine(@"    [Produces(""application/json"")]");
+            sb.AppendLine(@"    [Route(""api/Token"")]");
+            sb.AppendLine(@"    public class TokenController : Controller");
+            sb.AppendLine(@"    {");
+            sb.AppendLine(@"        [AllowAnonymous]");
+            sb.AppendLine(@"        [HttpPost]");
+            sb.AppendLine(@"        [Route(""auth"")]");
+            sb.AppendLine(@"        public object Post(");
+            sb.AppendLine(@"             [FromServices]SigningConfigurations signingConfigurations,");
+            sb.AppendLine(@"             [FromServices]TokenConfigurations tokenConfigurations)");
+            sb.AppendLine(@"        {");
+            sb.AppendLine(@"            string userId = ""userId"";");
+            sb.AppendLine(@"");
+            sb.AppendLine(@"            ClaimsIdentity identity = new ClaimsIdentity(");
+            sb.AppendLine(@"                       new GenericIdentity(userId, ""Login""),");
+            sb.AppendLine(@"                       new[] {");
+            sb.AppendLine(@"                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString(""N"")),");
+            sb.AppendLine(@"                        new Claim(JwtRegisteredClaimNames.UniqueName, userId)");
+            sb.AppendLine(@"                       }");
+            sb.AppendLine(@"                   );");
+            sb.AppendLine(@"");
+            sb.AppendLine(@"            DateTime dtCreation = DateTime.Now;");
+            sb.AppendLine(@"            DateTime dtExpiration = dtCreation +");
+            sb.AppendLine(@"                TimeSpan.FromSeconds(tokenConfigurations.Seconds);");
+            sb.AppendLine(@"");
+            sb.AppendLine(@"            var handler = new JwtSecurityTokenHandler();");
+            sb.AppendLine(@"            var securityToken = handler.CreateToken(new SecurityTokenDescriptor");
+            sb.AppendLine(@"            {");
+            sb.AppendLine(@"                Issuer = tokenConfigurations.Issuer,");
+            sb.AppendLine(@"                Audience = tokenConfigurations.Audience,");
+            sb.AppendLine(@"                SigningCredentials = signingConfigurations.SigningCredentials,");
+            sb.AppendLine(@"                Subject = identity,");
+            sb.AppendLine(@"                NotBefore = dtCreation,");
+            sb.AppendLine(@"                Expires = dtExpiration");
+            sb.AppendLine(@"            });");
+            sb.AppendLine(@"            var token = handler.WriteToken(securityToken);");
+            sb.AppendLine(@"");
+            sb.AppendLine(@"            return new");
+            sb.AppendLine(@"            {");
+            sb.AppendLine(@"                authenticated = true,");
+            sb.AppendLine(@"                created = dtCreation.ToString(""yyyy - MM - dd HH: mm:ss""),");
+            sb.AppendLine(@"                expiration = dtExpiration.ToString(""yyyy - MM - dd HH: mm:ss""),");
+            sb.AppendLine(@"                accessToken = token,");
+            sb.AppendLine(@"                message = ""OK""");
+            sb.AppendLine(@"            };");
+            sb.AppendLine(@"");
+            sb.AppendLine(@"            // case of fail:");
+            sb.AppendLine(@"            //return new");
+            sb.AppendLine(@"            //{");
+            sb.AppendLine(@"            //    authenticated = false,");
+            sb.AppendLine(@"            //    message = ""Fail to authenticate""");
+            sb.AppendLine(@"            //};");
+            sb.AppendLine(@"        }");
+            sb.AppendLine(@"    }");
+            sb.AppendLine(@"}");
+
+            File.WriteAllText(projectpath + "Controllers\\TokenController.cs", sb.ToString());
+        }
     }
 }

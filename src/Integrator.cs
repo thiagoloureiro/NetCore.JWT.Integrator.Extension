@@ -56,6 +56,8 @@ namespace JWTIntegrator
                 FileHelper.CreateTokenConfigurationsFile(projectpath);
 
                 FileHelper.AddInfotoStartup(projectpath);
+
+                FileHelper.CreateTokenController(projectpath);
             }
             catch (Exception ex)
             {
