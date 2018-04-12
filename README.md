@@ -6,3 +6,6 @@ JWT (Json Web Tokens) Integrator for .NET Core WEB API - Visual Studio Extension
 # How to Use:
 Right click over the Project and Click over "*Integrate JWT to the Project*"
 ![](https://raw.githubusercontent.com/thiagoloureiro/NetCore.JWT.Integrator.Extension/master/src/Resources/HowtoUse.png)
+
+# MarketPlace Download
+https://marketplace.visualstudio.com/items?itemName=thiagoguaru.jwtintegrator
